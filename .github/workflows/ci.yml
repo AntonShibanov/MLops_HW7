@@ -26,9 +26,15 @@ jobs:
       run: |
         echo "Проверка артефактов..."
         ls -la model.pkl hyperparameters.json requirements.txt
-        python -c "import pickle, json; model=pickle.load(open('model.pkl','rb')); \
-        with open('hyperparameters.json') as f: params=json.load(f); \
-        print(f'Воспроизведена модель с параметрами {params}')"
+        cat << 'EOF' > check.py
+        import pickle, json
+        with open('model.pkl', 'rb') as f:
+            model = pickle.load(f)
+        with open('hyperparameters.json') as f:
+            params = json.load(f)
+        print(f'Воспроизведена модель с параметрами {params}')
+        EOF
+        python check.py
 
     - name: Upload artifacts (опционально)
       uses: actions/upload-artifact@v4
