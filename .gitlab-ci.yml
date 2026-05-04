@@ -32,9 +32,5 @@ make_reproducible:
   stage: reproduce
   script:
     - echo "Проверка воспроизводимости..."
-    # Проверим, что артефакты с предыдущего этапа доступны
     - ls -la model.pkl hyperparameters.json requirements.txt
-    # Можно загрузить модель и прогнать инференс для демонстрации
-    - python -c "import pickle, json; model=pickle.load(open('model.pkl','rb'));
-      with open('hyperparameters.json') as f: params=json.load(f);
-      print(f'Воспроизведена модель с параметрами {params}')"
+    - python -c "import pickle, json; model=pickle.load(open('model.pkl','rb')); with open('hyperparameters.json') as f: params=json.load(f); print(f'Воспроизведена модель с параметрами {params}')"
