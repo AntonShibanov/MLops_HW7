@@ -1,0 +1,48 @@
+stages:
+  - build
+  - test
+  - reproduce
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+before_script:
+  - python -m venv venv
+  - source venv/bin/activate
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+build_model:
+  stage: build
+  script:
+    - echo "Запуск ML-пайплайна..."
+    - python ml_pipeline.py
+  artifacts:
+    paths:
+      - model.pkl
+      - hyperparameters.json
+      - requirements.txt
+    expire_in: 7 days
+
+test_model:
+  stage: test
+  script:
+    - echo "Проверка качества модели..."
+    - python -c "import pickle, json; model=pickle.load(open('model.pkl','rb')); 
+      import numpy as np; from sklearn.datasets import load_iris; X, y = load_iris(return_X_y=True); 
+      acc = model.score(X, y); print(f'Accuracy on full iris: {acc:.2f}'); 
+      assert acc > 0.9, 'Model accuracy too low'"
+
+make_reproducible:
+  stage: reproduce
+  script:
+    - echo "Проверка воспроизводимости..."
+    - ls -la model.pkl hyperparameters.json requirements.txt
+    - python -c "import pickle, json; model=pickle.load(open('model.pkl','rb')); 
+      with open('hyperparameters.json') as f: params=json.load(f); 
+      print(f'Воспроизведена модель с параметрами {params}')"
