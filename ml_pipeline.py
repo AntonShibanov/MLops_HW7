@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import pickle
+import json
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -11,3 +13,9 @@ model = RandomForestClassifier(**hyperparameters)
 model.fit(X_train, y_train);y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f'Точность аccuracy: {accuracy:.2f}')
+
+# Сохраняем артефакты
+with open('model.pkl', 'wb') as f:
+    pickle.dump(model, f)
+with open('hyperparameters.json', 'w') as f:
+    json.dump(hyperparameters, f, indent=2)
