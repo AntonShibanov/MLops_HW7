@@ -28,9 +28,7 @@
 
 ├── requirements.txt # Зависимости Python
 
-├── README.md
-
-└── docs/adr/ # Архитектурные решения (ADR)
+└── README.md
 
 
 ## Локальный запуск
