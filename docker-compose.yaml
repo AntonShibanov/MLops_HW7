@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  ml-blue:
+    image: my-ml-service:latest
+    container_name: ml-blue
+    environment:
+      - MODEL_PATH=/models/model_v1.pkl
+    volumes:
+      - ./models:/models
+    networks:
+      - ml-net
+    # Сервис работает на внутреннем порту 5000
+
+  ml-green:
+    image: my-ml-service:latest
+    container_name: ml-green
+    environment:
+      - MODEL_PATH=/models/model_v2.pkl
+    volumes:
+      - ./models:/models
+    networks:
+      - ml-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: ml-proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - ml-blue
+      - ml-green
+    networks:
+      - ml-net
+
+networks:
+  ml-net:
+    driver: bridge
